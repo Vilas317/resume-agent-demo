@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Resume Agent – Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    body {
+      background: #0f172a;
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+    .container {
+      width: 100%;
+      max-width: 960px;
+      background: #020617;
+      border-radius: 18px;
+      padding: 24px 24px 32px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.12);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.4);
+    }
+    .subtitle {
+      margin-top: 6px;
+      font-size: 0.95rem;
+      color: #9ca3af;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 1.1fr 1.4fr;
+      gap: 20px;
+    }
+    @media (max-width: 800px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+    .card {
+      background: #020617;
+      border-radius: 14px;
+      padding: 16px 18px 18px;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+    }
+    .card h2 {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9ca3af;
+      margin-bottom: 10px;
+    }
+    .field {
+      margin-bottom: 12px;
+    }
+    .field label {
+      display: block;
+      font-size: 0.8rem;
+      color: #9ca3af;
+      margin-bottom: 5px;
+    }
+    input[type="file"], input[type="text"] {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      padding: 8px 10px;
+      font-size: 0.85rem;
+      background: #020617;
+      color: #e5e7eb;
+    }
+    input[type="text"]::placeholder {
+      color: #6b7280;
+    }
+    input[type="file"] {
+      padding: 6px 10px;
+    }
+    .hint {
+      font-size: 0.75rem;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+    .button-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .btn {
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 0.82rem;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      background: transparent;
+      color: #e5e7eb;
+      cursor: pointer;
+    }
+    .btn-primary {
+      border: none;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #022c22;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-primary span.dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #bbf7d0;
+    }
+    .status-pill {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.12);
+      color: #7dd3fc;
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-pill span.dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22d3ee;
+    }
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .job-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .score-badge {
+      font-size: 0.8rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(234, 179, 8, 0.14);
+      color: #facc15;
+      border: 1px solid rgba(234, 179, 8, 0.6);
+    }
+    .result-section h3 {
+      font-size: 0.9rem;
+      margin-top: 10px;
+      margin-bottom: 4px;
+      color: #e5e7eb;
+    }
+    .result-section p,
+    .result-section li {
+      font-size: 0.82rem;
+      color: #d1d5db;
+      line-height: 1.45;
+    }
+    .result-section ul {
+      margin-left: 16px;
+      margin-top: 4px;
+    }
+    .result-section li {
+      margin-bottom: 3px;
+    }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+    .pill {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(31, 41, 55, 0.9);
+      color: #9ca3af;
+      border: 1px solid rgba(55, 65, 81, 0.9);
+    }
+    .footer-note {
+      margin-top: 14px;
+      font-size: 0.75rem;
+      color: #6b7280;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .small-tag {
+      font-size: 0.74rem;
+      color: #4b5563;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div>
+        <div class="title">
+          <span>AI Resume Agent</span>
+          <span class="badge">Demo – Static UI</span>
+        </div>
+        <p class="subtitle">
+          Upload a resume and select a target role to see how an AI agent could evaluate and
+          give targeted improvement advice.
+        </p>
+      </div>
+      <div class="status-pill">
+        <span class="dot"></span>
+        Prototype • Backend: Java + Groq
+      </div>
+    </header>
+
+    <div class="layout">
+      <!-- LEFT: Form -->
+      <section class="card">
+        <h2>1 · Upload & Target Role</h2>
+
+        <div class="field">
+          <label for="resumeFile">Resume file</label>
+          <input id="resumeFile" type="file" accept=".pdf,.doc,.docx,.txt" />
+          <p class="hint">Demo only – file is not uploaded or stored.</p>
+        </div>
+
+        <div class="field">
+          <label for="jobRole">Target Job Title</label>
+          <input id="jobRole" type="text" placeholder="e.g. Full Stack Engineer" />
+          <p class="hint">This is used to tailor the analysis in the real agent.</p>
+        </div>
+
+        <div class="button-row">
+          <button type="button" class="btn" id="resetBtn">Reset</button>
+          <button type="button" class="btn btn-primary" id="analyzeBtn">
+            <span class="dot"></span>
+            Analyze Resume
+          </button>
+        </div>
+
+        <p class="hint" style="margin-top:10px;">
+          This page is a front-end demo. The actual analysis pipeline runs in a Java agent
+          (Maven project) that parses the resume and calls Groq's LLM APIs.
+        </p>
+      </section>
+
+      <!-- RIGHT: Result -->
+      <section class="card">
+        <h2>2 · AI Assessment (Sample)</h2>
+
+        <div class="result-header">
+          <div>
+            <div class="job-title" id="jobTitleLabel">
+              Target Role: FullStackEngineer
+            </div>
+            <div class="small-tag">Sample based on a real run of the Java agent.</div>
+          </div>
+          <div class="score-badge" id="scoreBadge">
+            Score: 3.5 / 5
+          </div>
+        </div>
+
+        <div class="pill-row">
+          <span class="pill">Java Backend</span>
+          <span class="pill">Groq LLM</span>
+          <span class="pill">PDF/Text Parsing</span>
+          <span class="pill">Multi-agent Orchestration</span>
+        </div>
+
+        <div class="result-section" id="resultContent">
+          <h3>Summary</h3>
+          <p>
+            Candidate has relevant technical skills, experience, and projects, but lacks strong background
+            in Spring Boot and advanced React concepts.
+          </p>
+
+          <h3 style="margin-top:8px;">Suggested Improvements</h3>
+          <p><strong>1. Skill Match</strong> – Strengthen alignment with the target stack.</p>
+          <ul>
+            <li>Add Spring Boot and any related work, even if at a beginner level.</li>
+            <li>Highlight React experience and mention plans to deepen advanced concepts.</li>
+            <li>Emphasize overlapping tools: Java, JavaScript, REST APIs, etc.</li>
+          </ul>
+
+          <p style="margin-top:6px;"><strong>2. Experience</strong> – Make impact more visible.</p>
+          <ul>
+            <li>Quantify impact: incidents reduced, performance gains, uptime, etc.</li>
+            <li>Show technical leadership: mentoring, designing solutions, code reviews.</li>
+          </ul>
+
+          <p style="margin-top:6px;"><strong>3. Projects</strong> – Add focused full-stack work.</p>
+          <ul>
+            <li>Add at least 1–2 projects using Spring Boot + React (even personal projects).</li>
+            <li>Describe your role, tech stack, and measurable outcomes.</li>
+          </ul>
+
+          <p style="margin-top:6px;"><strong>4. Communication & Formatting</strong></p>
+          <ul>
+            <li>Keep using clear bullet points with strong action verbs.</li>
+            <li>Tailor the opening summary to explicitly mention “Full Stack Engineer”.</li>
+          </ul>
+        </div>
+
+        <div class="footer-note">
+          <span>
+            This UI is a static demo. The real agent runs as a Java CLI app and returns JSON that is rendered like this.
+          </span>
+          <span>
+            <a href="https://github.com/<your-username>/resume-agent" target="_blank" rel="noopener">
+              View full backend source →
+            </a>
+          </span>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const jobRoleInput = document.getElementById("jobRole");
+    const jobTitleLabel = document.getElementById("jobTitleLabel");
+    const scoreBadge = document.getElementById("scoreBadge");
+    const resultContent = document.getElementById("resultContent");
+    const resumeFileInput = document.getElementById("resumeFile");
+
+    const baseSummary =
+      "Candidate has relevant technical skills, experience, and projects, but lacks strong background in Spring Boot and advanced React concepts.";
+
+    function getRole() {
+      const raw = jobRoleInput.value.trim();
+      return raw.length ? raw : "FullStackEngineer";
+    }
+
+    analyzeBtn.addEventListener("click", () => {
+      const role = getRole();
+
+      jobTitleLabel.textContent = "Target Role: " + role;
+      scoreBadge.textContent = "Score: 3.5 / 5";
+
+      // fake "dynamic" summary referencing the role
+      resultContent.innerHTML = `
+        <h3>Summary</h3>
+        <p>${baseSummary}</p>
+
+        <h3 style="margin-top:8px;">Suggested Improvements for "${role}"</h3>
+        <p><strong>1. Skill Match</strong> – Strengthen alignment with the ${role} stack.</p>
+        <ul>
+          <li>Add Spring Boot and any related work, even if at a beginner level.</li>
+          <li>Highlight React experience and mention plans to deepen advanced concepts.</li>
+          <li>Emphasize overlapping tools: Java, JavaScript, REST APIs, etc.</li>
+        </ul>
+
+        <p style="margin-top:6px;"><strong>2. Experience</strong> – Make impact more visible.</p>
+        <ul>
+          <li>Quantify impact: incidents reduced, performance gains, uptime, etc.</li>
+          <li>Show technical leadership: mentoring, designing solutions, code reviews.</li>
+        </ul>
+
+        <p style="margin-top:6px;"><strong>3. Projects</strong> – Add focused full-stack work.</p>
+        <ul>
+          <li>Add at least 1–2 projects using Spring Boot + React (even personal projects).</li>
+          <li>Describe your role, tech stack, and measurable outcomes.</li>
+        </ul>
+
+        <p style="margin-top:6px;"><strong>4. Communication & Formatting</strong></p>
+        <ul>
+          <li>Keep using clear bullet points with strong action verbs.</li>
+          <li>Tailor the opening summary to explicitly mention “${role}”.</li>
+        </ul>
+      `;
+    });
+
+    resetBtn.addEventListener("click", () => {
+      jobRoleInput.value = "";
+      resumeFileInput.value = "";
+      jobTitleLabel.textContent = "Target Role: FullStackEngineer";
+      scoreBadge.textContent = "Score: 3.5 / 5";
+      resultContent.innerHTML = `
+        <h3>Summary</h3>
+        <p>${baseSummary}</p>
+        <h3 style="margin-top:8px;">Suggested Improvements</h3>
+        <p>Click “Analyze Resume” to regenerate tailored suggestions.</p>
+      `;
+    });
+  </script>
+</body>
+</html>
