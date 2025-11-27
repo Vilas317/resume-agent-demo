@@ -6,6 +6,9 @@ It showcases the user interface and the overall experience of the tool, designed
 👉 Live Demo:
 https://vilas317.github.io/resume-agent-demo
 
+👉 Source code (backend + agents):
+https://github.com/Vilas317/resume-agent
+
 ⭐ About This Project
 
 The AI Resume Assessment Agent is designed to:
